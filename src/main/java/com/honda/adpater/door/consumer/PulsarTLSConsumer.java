@@ -4,6 +4,11 @@
 package com.honda.adpater.door.consumer;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
 
@@ -13,6 +18,9 @@ import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.SubscriptionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -30,14 +38,19 @@ public class PulsarTLSConsumer {
     
 	private static final String TOPIC_NAME = String.format("persistent://public/default/healthcheck", TENANT, NAMESPACE);
 	
+	@Autowired
+	private ResourceLoader resourceLoader;
+	
+	
 	@PostConstruct
-	public void init() throws PulsarClientException, FileNotFoundException {
+	public void init() throws Exception {
+		
 		
 		PulsarClient client = PulsarClient.builder()
 				.serviceUrl("pulsar+ssl://eaimxtprxy-dv.dev.gm.com:16651")
-				.tlsTrustCertsFilePath(ResourceUtils.getFile("classpath:ca.cert.pem").getAbsolutePath())
-				.authentication(AuthenticationFactory.TLS(ResourceUtils.getFile("classpath:T_EXT_176252-EDL_HON.cert.pem").getAbsolutePath()
-						, ResourceUtils.getFile("classpath:T_EXT_176252-EDL_HON.key-pk8.pem").getAbsolutePath()))
+				.tlsTrustCertsFilePath(Paths.get("src/main/resources/ca.cert.pem").toAbsolutePath().toString())
+				.authentication(AuthenticationFactory.TLS(Paths.get("src/main/resources/T_EXT_176252-EDL_HON.cert.pem").toAbsolutePath().toString() 
+						, Paths.get("src/main/resources/T_EXT_176252-EDL_HON.key-pk8.pem").toAbsolutePath().toString()))
 				.build();
 		
 		 Consumer<byte[]> consumer = client.newConsumer()
