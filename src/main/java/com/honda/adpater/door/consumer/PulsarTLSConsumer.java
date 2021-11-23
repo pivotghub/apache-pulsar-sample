@@ -48,9 +48,9 @@ public class PulsarTLSConsumer {
 		
 		PulsarClient client = PulsarClient.builder()
 				.serviceUrl("pulsar+ssl://eaimxtprxy-dv.dev.gm.com:16651")
-				.tlsTrustCertsFilePath(Paths.get("src/main/resources/ca.cert.pem").toAbsolutePath().toString())
-				.authentication(AuthenticationFactory.TLS(Paths.get("src/main/resources/T_EXT_176252-EDL_HON.cert.pem").toAbsolutePath().toString() 
-						, Paths.get("src/main/resources/T_EXT_176252-EDL_HON.key-pk8.pem").toAbsolutePath().toString()))
+				.tlsTrustCertsFilePath("/honda/cert/ca.cert.pem")
+				.authentication(AuthenticationFactory.TLS("/honda/cert/T_EXT_176252-EDL_HON.cert.pem"
+						, "/honda/cert/T_EXT_176252-EDL_HON.key-pk8.pem"))
 				.build();
 		
 		 Consumer<byte[]> consumer = client.newConsumer()
